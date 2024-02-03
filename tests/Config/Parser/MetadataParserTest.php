@@ -556,7 +556,7 @@ abstract class MetadataParserTest extends TestCase
         try {
             $file = __DIR__.'/fixtures/annotations/Invalid/InvalidUnion.php';
             $this->parser('parse', new SplFileInfo($file), $this->containerBuilder, $this->parserConfig);
-            $this->fail('Union with missing resolve type shoud have raise an exception');
+            $this->fail('Union with missing resolve type should have raise an exception');
         } catch (Exception $e) {
             $this->assertInstanceOf(InvalidArgumentException::class, $e);
             $this->assertMatchesRegularExpression('/The metadata '.$this->formatMetadata('Union').' has no "resolveType"/', $e->getPrevious()->getMessage());
@@ -614,5 +614,31 @@ abstract class MetadataParserTest extends TestCase
             $this->assertInstanceOf(InvalidArgumentException::class, $e);
             $this->assertMatchesRegularExpression('/try to add a mutation on type "RootQuery2"/', $e->getPrevious()->getMessage());
         }
+    }
+
+    public function testInvalidPhpFiles(): void
+    {
+        $files = [
+            __DIR__.'/fixtures/annotations/Invalid/HasNoClass.php',
+            __DIR__.'/fixtures/annotations/Invalid/EmptyPhpFile.php',
+            __DIR__.'/fixtures/annotations/Invalid/NotAPhpFile',
+            __DIR__.'/fixtures/annotations/Type/RootQuery.php',
+        ];
+        $this->parser('reset', $this->parserConfig);
+
+        foreach ($files as $file) {
+            $this->parser('preParse', new SplFileInfo($file), $this->containerBuilder, $this->parserConfig);
+        }
+
+        $config = [];
+        foreach ($files as $file) {
+            $config += self::cleanConfig($this->parser('parse', new SplFileInfo($file), $this->containerBuilder, $this->parserConfig));
+        }
+
+        $this->assertSame([
+            'RootQuery' => [
+                'type' => 'object',
+            ],
+        ], $config);
     }
 }
