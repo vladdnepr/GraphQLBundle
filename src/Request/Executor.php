@@ -92,6 +92,10 @@ class Executor implements ResetInterface
             $name = isset($this->schemas['default']) ? 'default' : array_key_first($this->schemas);
         }
 
+        if (null === $name) {
+            $name = isset($this->schemaBuilders['default']) ? 'default' : array_key_first($this->schemaBuilders);
+        }
+
         if (isset($this->schemas[$name])) {
             $schema = $this->schemas[$name];
         } elseif (isset($this->schemaBuilders[$name])) {
@@ -118,7 +122,7 @@ class Executor implements ResetInterface
 
     public function getSchemasNames(): array
     {
-        return array_keys($this->schemas);
+        return array_merge(array_keys($this->schemaBuilders), array_keys($this->schemas));
     }
 
     public function setMaxQueryDepth(int $maxQueryDepth): void
