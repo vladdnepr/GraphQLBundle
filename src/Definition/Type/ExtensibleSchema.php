@@ -12,7 +12,6 @@ class ExtensibleSchema extends Schema
 {
     /**
      * Need to reset when container reset called
-     * @var bool
      */
     private bool $isResettable = false;
 

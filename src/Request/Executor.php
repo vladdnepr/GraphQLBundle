@@ -22,10 +22,8 @@ use Overblog\GraphQLBundle\Executor\ExecutorInterface;
 use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-
 use Symfony\Contracts\Service\ResetInterface;
 use function array_keys;
-use function is_callable;
 use function sprintf;
 
 class Executor implements ResetInterface
@@ -114,9 +112,7 @@ class Executor implements ResetInterface
         // Remove only ExtensibleSchema and isResettable
         $this->schemas = array_filter(
             $this->schemas,
-            function (Schema $schema) {
-                return $schema instanceof ExtensibleSchema && !$schema->isResettable();
-            }
+            fn (Schema $schema) => $schema instanceof ExtensibleSchema && !$schema->isResettable()
         );
     }
 
