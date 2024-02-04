@@ -23,12 +23,12 @@ final class SchemaBuilder
         $this->enableValidation = $enableValidation;
     }
 
-    public function getBuilder(string $name, ?string $queryAlias, string $mutationAlias = null, string $subscriptionAlias = null, array $types = []): Closure
+    public function getBuilder(string $name, ?string $queryAlias, string $mutationAlias = null, string $subscriptionAlias = null, array $types = [], bool $resettable = false): Closure
     {
-        return function () use ($name, $queryAlias, $mutationAlias, $subscriptionAlias, $types): ExtensibleSchema {
+        return function () use ($name, $queryAlias, $mutationAlias, $subscriptionAlias, $types, $resettable): ExtensibleSchema {
             static $schema = null;
             if (null === $schema) {
-                $schema = $this->create($name, $queryAlias, $mutationAlias, $subscriptionAlias, $types);
+                $schema = $this->create($name, $queryAlias, $mutationAlias, $subscriptionAlias, $types, $resettable);
             }
 
             return $schema;
@@ -38,7 +38,7 @@ final class SchemaBuilder
     /**
      * @param string[] $types
      */
-    public function create(string $name, ?string $queryAlias, string $mutationAlias = null, string $subscriptionAlias = null, array $types = []): ExtensibleSchema
+    public function create(string $name, ?string $queryAlias, string $mutationAlias = null, string $subscriptionAlias = null, array $types = [], bool $resettable = false): ExtensibleSchema
     {
         $this->typeResolver->setCurrentSchemaName($name);
         $query = $this->typeResolver->resolve($queryAlias);
@@ -46,6 +46,7 @@ final class SchemaBuilder
         $subscription = $this->typeResolver->resolve($subscriptionAlias);
 
         $schema = new ExtensibleSchema($this->buildSchemaArguments($name, $query, $mutation, $subscription, $types));
+        $schema->setIsResettable($resettable);
         $extensions = [];
 
         if ($this->enableValidation) {
