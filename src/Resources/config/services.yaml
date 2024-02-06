@@ -28,6 +28,8 @@ services:
         arguments:
             - '@Overblog\GraphQLBundle\Resolver\TypeResolver'
             - false
+        tags:
+            - { name: 'kernel.reset', 'method': "reset" }
 
     Overblog\GraphQLBundle\Definition\Builder\TypeFactory:
         arguments:
@@ -39,6 +41,7 @@ services:
             - ['setDispatcher', ['@event_dispatcher']]
         tags:
             - { name: overblog_graphql.service, alias: typeResolver }
+            - {name: 'kernel.reset', 'method': "reset"}
 
     Overblog\GraphQLBundle\Transformer\ArgumentsTransformer:
         arguments:

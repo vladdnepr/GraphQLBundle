@@ -87,4 +87,11 @@ class TypeResolver extends AbstractResolver
     {
         return Type::class;
     }
+
+    public function reset(): void
+    {
+        parent::reset();
+
+        $this->cache = [];
+    }
 }
